@@ -1,6 +1,8 @@
 package com.example.GameVault.controller;
 
 import com.example.GameVault.Model.Juego;
+import com.example.GameVault.service.JuegoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +18,9 @@ import java.util.UUID;
 
 @Controller
 public class GameController {
+    @Autowired
+    private JuegoService juegoService;
 
-    private static List<Juego> juegosdb = new ArrayList<>();
     private static long idCounter = 1;
     private static final String  UPLOAD_DIR="src/main/resources/static/uploads/";
 
@@ -29,7 +32,7 @@ public class GameController {
 
     @GetMapping({"/", "/juegos"})
     public String juegos(Model model){
-        model.addAttribute("juegos", juegosdb);
+        model.addAttribute("juegos", this.juegoService.listarTodos());
         return "juegos";
     }
 
@@ -42,44 +45,11 @@ public class GameController {
     public String guardarJuego(@RequestParam("titulo") String titulo,
                                @RequestParam("descripcion") String descripcion,
                                @RequestParam("portada") MultipartFile portada) {
-
-        String nombreArchivo = "default.png"; // Imagen por defecto si no suben nada
-
-
-        // Verificamos si el archivo no está vacío
-        if (!portada.isEmpty()) {
-            try {
-                // Tip para clase: Crear la carpeta si no existe
-                Path uploadPath = Paths.get(UPLOAD_DIR);
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-
-
-                // Generamos un nombre único para evitar sobreescribir archivos con el mismo nombre
-                nombreArchivo = UUID.randomUUID().toString() + "_" + portada.getOriginalFilename();
-                Path filePath = uploadPath.resolve(nombreArchivo);
-
-
-                // Guardamos el archivo físicamente en disco
-                Files.copy(portada.getInputStream(), filePath);
-
-                System.out.println("Archivo guardado en: " + filePath.toAbsolutePath());
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                // En un proyecto real, manejaríamos esta excepción apropiadamente (ej. redirigir con error)
-            }
-        }
-
-
-        // Guardamos el juego en nuestra "base de datos"
-        Juego nuevoJuego = new Juego(idCounter++, titulo, descripcion, nombreArchivo);
-        juegosdb.add(nuevoJuego);
-
-
-        // Redirigimos a la lista de juegos (Patrón PRG - Post/Redirect/Get)
+        Juego juego = new Juego();
+        juego.setTitulo(titulo);
+        juego.setDescripcion(descripcion);
+        this.juegoService.guardarJuego(juego, portada);
+        //Redirigimos a la lista de juegos (Patrón PRG - Post/Redirect/GET)
         return "redirect:/juegos";
     }
 
