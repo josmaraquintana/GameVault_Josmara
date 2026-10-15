@@ -23,11 +23,11 @@ public class Usuario {
     private String nombre;
 
     @Column(nullable = false, unique = true)
-    private String correo;
+    private String email;
 
     @Column(nullable = false)
     private String contrasenia;
 
-    @OneToMany(mappedBy = "usuarios", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<Juego> juegos;
 }

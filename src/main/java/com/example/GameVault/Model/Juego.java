@@ -8,10 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Entity
 @Table(name="juegos")
-
 public class Juego {
      @Id
      @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +33,4 @@ public class Juego {
      @ManyToOne
      @JoinColumn(name="usuario_id")
      private Usuario usuario;
-
-
 }

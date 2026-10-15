@@ -18,7 +18,23 @@
                 <h3 th:text="${juego.titulo}" style="margin-top: 0; margin-bottom: 10px;">Título del Juego</h3>
                 <p th:text="${juego.descripcion}" style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin: 0;">Descripción breve del juego.</p>
             </div>
+
+            <div style="display: flex; gap: 10px; margin: auto">
+                <a th:href="@{/juegos/editar/{id}(id=${juego.id})}">Editar</a>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin: auto">
+                <form th:action="@{/juegos/eliminar/{id}(id=${juego.id})}"
+                      method="post"
+                      onsubmit="return confirm('¿Estás seguro que deseas eliminar el juego?')">
+
+                    <button type="submit">Eliminar</button>
+                </form>
+            </div>
+
         </div>
+
+
 
     </div>
 </main>
